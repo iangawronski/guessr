@@ -11,6 +11,9 @@ module Guessr
       # alternately: validates :name, presence: true
     end
 
+    class NumberGuessingGame < Base
+    end
+
     class Hangman < Base
       validates :answer, presence: true,
         format: { with: /^[a-z]+$/, message: "only lowercase words allowed"}
@@ -47,21 +50,37 @@ module Guessr
           t.timestamps
         end
       end
-        create_table NumberGuessingGame.table_name do |t|
-          t.integer :guesses
-          t.integer :answer
-          t.boolean :finished
-          t.timestamps
-        end
 
       def self.down
         drop_table Player.table_name
         drop_table Hangman.table_name
-        drop_table NumberGuessingGame.table_name
       end
     end
 
-    class AddNicknameToNumberGuessingGame < V 1.1
+    class AddPlayerIdToHangman < V 1.1
+      def self.up
+        add_column Hangman.table_name, :player_id, :integer
+      end
+
+      def self.down
+        remove_column Hangman.table_name, :player_id
+      end
+    end
+
+    class AddNumberGuessingGame < V 1.2
+      def self.up
+        create_table NumberGuessingGame.table_name do |t|
+          t.integer :guesses
+          t.integer :answer
+          t.integer :total_guess
+          t.boolean :finished
+          t.timestamps
+
+      def self.down
+        drop_table NumberGuessingGame.table_name do |t|
+
+
+    class AddNicknameToNumberGuessingGame < V 1.3
       def self.up
         add_column NumberGuessingGame.table_name :player_nickname, :string
       end
@@ -71,7 +90,7 @@ module Guessr
       end
     end
 
-    class LastNameInNumberGuessingGame < V 1.2
+    class LastNameInNumberGuessingGame < V 1.4
       def self.up
         add_column NumberGuessingGame.table_name :last_name, :string
       end
